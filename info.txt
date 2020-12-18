@@ -1,0 +1,3 @@
+name = Inventory mod
+author = 2crabs
+description = An inventory sytem which allows you to carry 4 objects at once and place them. Go into options to see the controls.
