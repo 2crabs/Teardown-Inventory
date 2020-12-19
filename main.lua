@@ -7,6 +7,11 @@ function init()
 
 	keyPos = 0
 	keyPos2 = 4
+	mousex = 0
+	mousey = 0
+
+	IsInPlaceMode = false
+	StoredHeight = 0
 end
 
 function tick(dt)
@@ -43,7 +48,7 @@ function tick(dt)
 					isstored[i] = true
 					break
 				end
-				if (i ==4) then
+				if (i == 4) then
 					SetString("hud.notification","Inventory full")
 				end
 			end
@@ -70,7 +75,7 @@ function tick(dt)
 	for i = 1,4,1 
 	do 
 		if(readytoplace[i]) then
-			--change amount of rotation.not currently used for control.
+			--change amount of rotation.
 			if(InputDown("t")) then
 				keyPos = keyPos + 0.1
 			end
@@ -84,17 +89,23 @@ function tick(dt)
 			if(InputDown("j") and keyPos2 > -0.1) then
 				keyPos2 = keyPos2 - 0.1
 			end
+
+			IsInPlaceMode = true
 		
-			--keyboard is used for rotation.
-			SetBodyTransform(storedhb[i],Transform(VecAdd(lookAt, Vec(0,keyPos2/4,0)),QuatEuler(0,keyPos*15,0)))
+			--keyboard is used for rotation. using mouse for other rotation. If you want the height to not stay just replace Vec(lookAt[1],StoredHeight,lookAt[3]) with lookAt
+			SetBodyTransform(storedhb[i],Transform(VecAdd(Vec(lookAt[1],StoredHeight,lookAt[3]), Vec(0,keyPos2/4,0)),QuatEuler(mousex/10,keyPos*15,mousey/10)))
 			SetBodyVelocity(storedhb[i], Vec(0,0,0))
 			SetBodyAngularVelocity(storedhb[i], Vec(0,0,0))
 			DrawBodyHighlight(storedhb[i], 0.6)
 			--drop object when lmb is pressed
-			if (InputDown("lmb")or GetPlayerVehicle()>0) then
+			if (InputDown("lmb") or GetPlayerVehicle()>0) then
 				readytoplace[i] = false
 				storedhb[i] = nil
+				IsInPlaceMode = false
 				keyPos2 = 4
+				--reset mouse position variables
+				mousex = 0
+				mousey = 0
 			end
 		end
 	end
@@ -165,6 +176,16 @@ function draw()
 			UiTextButton("Empty",190, 250)
 		end
 	end
+
+	--debug
+	if (InputDown("rmb") and IsInPlaceMode) then
+		UiMakeInteractive()
+		mousex = mousex + InputValue("mousedx")
+		mousey = mousey + InputValue("mousedy")
+		DebugWatch("mousex",mousex)
+		DebugWatch("mousey",mousey)
+	end
+	DebugWatch("placing",IsInPlaceMode)
 end
 
 --used to reject bodies when placing them. Raycast can not see them. Like when placing a car so raycast goes through car to ground instead of hitting the car.
@@ -183,4 +204,6 @@ function StoreItem(StoredNum)
 	SetBodyVelocity(storedhb[StoredNum], Vec(0,0,0))
 	isstored[StoredNum] = false
 	readytoplace[StoredNum] = true
+
+	StoredHeight = lookAt[2]
 end
