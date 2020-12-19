@@ -22,7 +22,7 @@ function tick(dt)
 
 	local md = 500
 	local f = TransformToParentPoint(ct, Vec(0, 0, md * - 1))
-	local d = VecSub(f, ct.pos)
+	d = VecSub(f, ct.pos)
 	d = VecNormalize(d)
 	hit, dist, normal, hs = QueryRaycast(ct.pos, d, md)
 
@@ -52,6 +52,7 @@ function tick(dt)
 					SetString("hud.notification","Inventory full")
 				end
 			end
+			WakeupAround(lookAt)
 		end
 	end
 
@@ -71,7 +72,6 @@ function tick(dt)
 	end
 
 	--placement
-
 	for i = 1,4,1 
 	do 
 		if(readytoplace[i]) then
@@ -91,7 +91,7 @@ function tick(dt)
 			end
 
 			IsInPlaceMode = true
-		
+	
 			--keyboard is used for rotation. using mouse for other rotation. If you want the height to not stay just replace Vec(lookAt[1],StoredHeight,lookAt[3]) with lookAt
 			SetBodyTransform(storedhb[i],Transform(VecAdd(Vec(lookAt[1],StoredHeight,lookAt[3]), Vec(0,keyPos2/4,0)),QuatEuler(mousex/10,keyPos*15,mousey/10)))
 			SetBodyVelocity(storedhb[i], Vec(0,0,0))
@@ -109,7 +109,6 @@ function tick(dt)
 			end
 		end
 	end
-	
 end
 
 function draw()
@@ -177,15 +176,11 @@ function draw()
 		end
 	end
 
-	--debug
-	if (InputDown("rmb") and IsInPlaceMode) then
+	if(InputDown("rmb") and IsInPlaceMode) then
 		UiMakeInteractive()
 		mousex = mousex + InputValue("mousedx")
 		mousey = mousey + InputValue("mousedy")
-		DebugWatch("mousex",mousex)
-		DebugWatch("mousey",mousey)
 	end
-	DebugWatch("placing",IsInPlaceMode)
 end
 
 --used to reject bodies when placing them. Raycast can not see them. Like when placing a car so raycast goes through car to ground instead of hitting the car.
@@ -204,6 +199,35 @@ function StoreItem(StoredNum)
 	SetBodyVelocity(storedhb[StoredNum], Vec(0,0,0))
 	isstored[StoredNum] = false
 	readytoplace[StoredNum] = true
+	SetBodyTransform(storedhb[StoredNum],Transform(Vec(0,-100*StoredNum,0),storedhbt[StoredNum].rot))
 
 	StoredHeight = lookAt[2]
+end
+
+--used for debugging if needed
+function DebugBox(centerOf,height,width,length)
+	DebugLine(VecAdd(centerOf,Vec(length/2,height/2,width/2)),VecAdd(centerOf,Vec(length/2,height/-2,width/2)))
+	DebugLine(VecAdd(centerOf,Vec(length/2,height/2,width/-2)),VecAdd(centerOf,Vec(length/2,height/-2,width/-2)))
+	DebugLine(VecAdd(centerOf,Vec(length/-2,height/2,width/2)),VecAdd(centerOf,Vec(length/-2,height/-2,width/2)))
+	DebugLine(VecAdd(centerOf,Vec(length/-2,height/2,width/-2)),VecAdd(centerOf,Vec(length/-2,height/-2,width/-2)))
+
+	DebugLine(VecAdd(centerOf,Vec(length/-2,height/2,width/-2)),VecAdd(centerOf,Vec(length/2,height/2,width/-2)))
+	DebugLine(VecAdd(centerOf,Vec(length/-2,height/-2,width/-2)),VecAdd(centerOf,Vec(length/2,height/-2,width/-2)))
+	DebugLine(VecAdd(centerOf,Vec(length/-2,height/2,width/2)),VecAdd(centerOf,Vec(length/2,height/2,width/2)))
+	DebugLine(VecAdd(centerOf,Vec(length/-2,height/-2,width/2)),VecAdd(centerOf,Vec(length/2,height/-2,width/2)))
+
+	DebugLine(VecAdd(centerOf,Vec(length/-2,height/2,width/-2)),VecAdd(centerOf,Vec(length/-2,height/2,width/2)))
+	DebugLine(VecAdd(centerOf,Vec(length/-2,height/-2,width/-2)),VecAdd(centerOf,Vec(length/-2,height/-2,width/2)))
+	DebugLine(VecAdd(centerOf,Vec(length/2,height/2,width/-2)),VecAdd(centerOf,Vec(length/2,height/2,width/2)))
+	DebugLine(VecAdd(centerOf,Vec(length/2,height/-2,width/-2)),VecAdd(centerOf,Vec(length/2,height/-2,width/2)))
+end
+
+function WakeupAround(centerOfWake)
+	allbodies = QueryAabbBodies(VecAdd(Vec(-5,-5,-5),centerOfWake), VecAdd(Vec(5,5,5),centerOfWake))
+	for i=1,#allbodies do
+		bodt = GetBodyTransform(allbodies[i])
+		if(GetBodyMass(allbodies[i])>0) then
+			ApplyBodyImpulse(allbodies[i], bodt.pos, Vec(0,0,0))
+		end
+	end
 end
