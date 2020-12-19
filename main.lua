@@ -90,6 +90,11 @@ function tick(dt)
 				keyPos2 = keyPos2 - 0.1
 			end
 
+			--if object in ground get it out.
+			if(math.abs(StoredHeight - lookAt[2])>2) then
+				StoredHeight = lookAt[2]
+			end
+
 			IsInPlaceMode = true
 	
 			--keyboard is used for rotation. using mouse for other rotation. If you want the height to not stay just replace Vec(lookAt[1],StoredHeight,lookAt[3]) with lookAt
