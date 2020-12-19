@@ -86,7 +86,7 @@ function tick(dt)
 			if(InputDown("u")) then
 				keyPos2 = keyPos2 + 0.1
 			end
-			if(InputDown("j") and keyPos2 > -0.1) then
+			if(InputDown("j") and (((keyPos2/4)+StoredHeight) > lookAt[2])) then
 				keyPos2 = keyPos2 - 0.1
 			end
 
