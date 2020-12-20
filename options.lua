@@ -1,17 +1,18 @@
-
-function draw()
-	--add value if nil
-	if (GetBool("savegame.mod.sledge") == nil) then
+function init()
+	if (not HasKey("savegame.mod.sledge")) then
 		SetBool("savegame.mod.sledge", true)
 	end
 
-	if (GetBool("savegame.mod.outline") == nil) then
-		SetBool("savegame.mod.outline", true)
+	if (not HasKey("savegame.mod.outline")) then
+		SetBool("savegame.mod.outline", false)
 	end
 
-	if (GetBool("savegame.mod.smart") == nil) then
-		SetBool("savegame.mod.smart", true)
+	if (not HasKey("savegame.mod.smart")) then
+		SetBool("savegame.mod.smart", false)
 	end
+end
+
+function draw()
 
 	UiTranslate(UiCenter(), 300)
 	UiAlign("center middle")
@@ -42,13 +43,12 @@ function draw()
 	UiFont("regular.ttf", 30)
 	UiText("Only allow use with sledge")
 	UiTranslate(250,-2)
+	UiColor(1, 1, 0.4, 1)
 	if (GetBool("savegame.mod.sledge")) then
-		UiColor(1, 1, 0.4, 1)
 		if UiTextButton("disabled") then
 			SetBool("savegame.mod.sledge", false)
 		end
 	else
-		UiColor(1, 1, 0.4, 1)
 		if UiTextButton("enabled") then
 			SetBool("savegame.mod.sledge", true)
 		end
@@ -58,13 +58,12 @@ function draw()
 	UiFont("regular.ttf", 30)
 	UiText("Outline objects")
 	UiTranslate(250,-2)
+	UiColor(1, 1, 0.4, 1)
 	if (GetBool("savegame.mod.outline")) then
-		UiColor(1, 1, 0.4, 1)
 		if UiTextButton("disabled") then
 			SetBool("savegame.mod.outline", false)
 		end
 	else
-		UiColor(1, 1, 0.4, 1)
 		if UiTextButton("enabled") then
 			SetBool("savegame.mod.outline", true)
 		end
@@ -74,13 +73,12 @@ function draw()
 	UiFont("regular.ttf", 30)
 	UiText("Placement type")
 	UiTranslate(250,-2)
+	UiColor(1, 1, 0.4, 1)
 	if (GetBool("savegame.mod.smart")) then
-		UiColor(1, 1, 0.4, 1)
 		if UiTextButton("regular") then
 			SetBool("savegame.mod.smart", false)
 		end
 	else
-		UiColor(1, 1, 0.4, 1)
 		if UiTextButton("smart") then
 			SetBool("savegame.mod.smart", true)
 		end
