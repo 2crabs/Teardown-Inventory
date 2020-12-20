@@ -1,7 +1,7 @@
+
 function draw()
 	UiTranslate(UiCenter(), 300)
 	UiAlign("center middle")
-
 	--Title
 	UiTranslate(0, -100)
 	UiFont("bold.ttf", 88)
@@ -22,7 +22,23 @@ function draw()
 	UiText("t and y: Rotate a item when in placing mode")
 	UiTranslate(0, 60)
 	UiText("u and j: Move a item up and down when in placing mode")
-
-
+	UiTranslate(0, 80)
+	UiFont("bold.ttf", 88)
+	UiText("Options")
+	UiTranslate(-100, 80)
+	UiFont("regular.ttf", 30)
+	UiText("Only use sledge for placing items")
+	UiTranslate(250,-2)
+	if (GetBool("savegame.mod.sledge")) then
+		UiColor(1, 1, 0.4, 1)
+		if UiTextButton("disabled") then
+			SetBool("savegame.mod.sledge", false)
+		end
+	else
+		UiColor(1, 1, 0.4, 1)
+		if UiTextButton("enabled") then
+			SetBool("savegame.mod.sledge", true)
+		end
+	end
 end
 

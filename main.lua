@@ -12,9 +12,21 @@ function init()
 
 	IsInPlaceMode = false
 	StoredHeight = 0
+
+	OptionsSledge = not GetBool("savegame.mod.sledge")
 end
 
 function tick(dt)
+	if(OptionsSledge==true) then
+		if(GetString("game.player.tool")=="sledge") then
+			IsUsingSledge = true
+		else
+			IsUsingSledge = false
+		end
+	else
+		IsUsingSledge = true
+	end
+
 	rejectBodies()
 
 	local pt = GetPlayerTransform()
@@ -35,7 +47,7 @@ function tick(dt)
 	--checks if not static with GetBodyMass(hb) > 0
 	if(hit and GetBodyMass(hb) > 0 and GetPlayerVehicle() == 0) then
 		DrawBodyOutline(hb,1,1,1,0.5)
-		if(InputPressed("q")) then
+		if(InputPressed("q") and IsUsingSledge) then
 			--set storage
 			for i = 1,4,1 
 			do
@@ -65,7 +77,7 @@ function tick(dt)
 	end
 
 	--beginning of menu script
-	if (InputDown("r")) then
+	if (InputDown("r") and IsUsingSledge) then
 		show = true
 	else
 		show = false
@@ -186,6 +198,11 @@ function draw()
 		mousex = mousex + InputValue("mousedx")
 		mousey = mousey + InputValue("mousedy")
 	end
+
+	--debug
+	DebugWatch("tool",GetString("game.player.tool"))
+	DebugWatch("true",OptionsSledge)
+	DebugWatch("Using sledge",IsUsingSledge)
 end
 
 --used to reject bodies when placing them. Raycast can not see them. Like when placing a car so raycast goes through car to ground instead of hitting the car.
