@@ -15,6 +15,7 @@ function init()
 
 	OptionsSledge = not GetBool("savegame.mod.sledge")
 	OptionsOutline = not GetBool("savegame.mod.outline")
+	OptionsSmart = not GetBool("savegame.mod.smart")
 end
 
 function tick(dt)
@@ -101,17 +102,22 @@ function tick(dt)
 			if(InputDown("u")) then
 				keyPos2 = keyPos2 + 0.1
 			end
-			if(InputDown("j") and (((keyPos2/4)+StoredHeight) > lookAt[2])) then
+			--do this if smart mode
+			if(InputDown("j") and (((keyPos2/4)+StoredHeight) > lookAt[2]) and OptionsSmart) then
+				keyPos2 = keyPos2 - 0.1
+			end
+			--do this if not
+			if(InputDown("j") and (((keyPos2/4)+lookAt[2]) > lookAt[2]) and not (OptionsSmart)) then
 				keyPos2 = keyPos2 - 0.1
 			end
 
 			--if object in ground get it out.
-			if(math.abs(StoredHeight - lookAt[2])>2) then
+			if(math.abs(StoredHeight - lookAt[2])>8) then
 				StoredHeight = lookAt[2]
 			end
 
 			--Smart height
-			if (((keyPos2/4)+StoredHeight)<lookAt[2]) then
+			if (((keyPos2/4)+StoredHeight)<lookAt[2] and OptionsSmart) then
 				if((lookAt[2]-((keyPos2/4)+StoredHeight))<(keyPos2/4)) then
 					keyPos2 = keyPos2 -(lookAt[2] - ((keyPos2/4)+StoredHeight))
 				else
@@ -123,7 +129,11 @@ function tick(dt)
 			IsInPlaceMode = true
 	
 			--keyboard is used for rotation. using mouse for other rotation. If you want the height to not stay just replace Vec(lookAt[1],StoredHeight,lookAt[3]) with lookAt
-			SetBodyTransform(storedhb[i],Transform(VecAdd(Vec(lookAt[1],StoredHeight,lookAt[3]), Vec(0,keyPos2/4,0)),QuatEuler(mousex/10,keyPos*15,mousey/10)))
+			if(OptionsSmart) then
+				SetBodyTransform(storedhb[i],Transform(VecAdd(Vec(lookAt[1],StoredHeight,lookAt[3]), Vec(0,keyPos2/4,0)),QuatEuler(mousex/10,keyPos*15,mousey/10)))
+			else
+				SetBodyTransform(storedhb[i],Transform(VecAdd(lookAt, Vec(0,keyPos2/4,0)),QuatEuler(mousex/10,keyPos*15,mousey/10)))
+			end
 			SetBodyVelocity(storedhb[i], Vec(0,0,0))
 			SetBodyAngularVelocity(storedhb[i], Vec(0,0,0))
 			DrawBodyHighlight(storedhb[i], 0.6)

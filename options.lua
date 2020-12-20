@@ -9,6 +9,10 @@ function draw()
 		SetBool("savegame.mod.outline", true)
 	end
 
+	if (GetBool("savegame.mod.smart") == nil) then
+		SetBool("savegame.mod.smart", true)
+	end
+
 	UiTranslate(UiCenter(), 300)
 	UiAlign("center middle")
 	--Title
@@ -63,6 +67,22 @@ function draw()
 		UiColor(1, 1, 0.4, 1)
 		if UiTextButton("enabled") then
 			SetBool("savegame.mod.outline", true)
+		end
+	end
+	UiTranslate(-250, 50)
+	UiColor(1, 1, 1, 1)
+	UiFont("regular.ttf", 30)
+	UiText("Placement type")
+	UiTranslate(250,-2)
+	if (GetBool("savegame.mod.smart")) then
+		UiColor(1, 1, 0.4, 1)
+		if UiTextButton("regular") then
+			SetBool("savegame.mod.smart", false)
+		end
+	else
+		UiColor(1, 1, 0.4, 1)
+		if UiTextButton("smart") then
+			SetBool("savegame.mod.smart", true)
 		end
 	end
 end
