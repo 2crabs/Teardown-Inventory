@@ -46,11 +46,11 @@ function tick(dt)
 	lookAt = TransformToParentPoint(ct, Vec(0, 0, dist * - 1))
 
 	--checks if not static with GetBodyMass(hb) > 0
-	if(hit and GetBodyMass(hb) > 0 and GetPlayerVehicle() == 0) then
+	if(hit and GetBodyMass(hb) > 0 and GetPlayerVehicle() == 0 and IsUsingSledge) then
 		if(OptionsOutline) then
 			DrawBodyOutline(hb,1,1,1,0.5)
 		end
-		if(InputPressed("q") and IsUsingSledge) then
+		if(InputPressed("q")) then
 			--set storage
 			for i = 1,4,1 
 			do
@@ -108,6 +108,16 @@ function tick(dt)
 			--if object in ground get it out.
 			if(math.abs(StoredHeight - lookAt[2])>2) then
 				StoredHeight = lookAt[2]
+			end
+
+			--Smart height
+			if (((keyPos2/4)+StoredHeight)<lookAt[2]) then
+				if((lookAt[2]-((keyPos2/4)+StoredHeight))<(keyPos2/4)) then
+					keyPos2 = keyPos2 -(lookAt[2] - ((keyPos2/4)+StoredHeight))
+				else
+					StoredHeight = lookAt[2]
+					keyPos2 = 0
+				end
 			end
 
 			IsInPlaceMode = true
@@ -201,11 +211,6 @@ function draw()
 		mousex = mousex + InputValue("mousedx")
 		mousey = mousey + InputValue("mousedy")
 	end
-
-	--debug
-	DebugWatch("tool",GetString("game.player.tool"))
-	DebugWatch("true",OptionsSledge)
-	DebugWatch("Using sledge",IsUsingSledge)
 end
 
 --used to reject bodies when placing them. Raycast can not see them. Like when placing a car so raycast goes through car to ground instead of hitting the car.
