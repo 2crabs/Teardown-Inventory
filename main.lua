@@ -14,6 +14,7 @@ function init()
 	StoredHeight = 0
 
 	OptionsSledge = not GetBool("savegame.mod.sledge")
+	OptionsOutline = not GetBool("savegame.mod.outline")
 end
 
 function tick(dt)
@@ -46,7 +47,9 @@ function tick(dt)
 
 	--checks if not static with GetBodyMass(hb) > 0
 	if(hit and GetBodyMass(hb) > 0 and GetPlayerVehicle() == 0) then
-		DrawBodyOutline(hb,1,1,1,0.5)
+		if(OptionsOutline) then
+			DrawBodyOutline(hb,1,1,1,0.5)
+		end
 		if(InputPressed("q") and IsUsingSledge) then
 			--set storage
 			for i = 1,4,1 
