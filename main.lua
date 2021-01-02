@@ -4,6 +4,7 @@ function init()
 	storedhb = {}
 	storedhbt = {}
 	readytoplace = {}
+	correctedpos = {}
 
 	keyPos = 0
 	keyPos2 = 4
@@ -16,6 +17,9 @@ function init()
 	OptionsSledge = not GetBool("savegame.mod.sledge")
 	OptionsOutline = not GetBool("savegame.mod.outline")
 	OptionsSmart = not GetBool("savegame.mod.smart")
+
+	firstplace = true
+	firstplacenum = 0
 end
 
 function tick(dt)
@@ -131,8 +135,15 @@ function tick(dt)
 			--keyboard is used for rotation. using mouse for other rotation. If you want the height to not stay just replace Vec(lookAt[1],StoredHeight,lookAt[3]) with lookAt
 			if(OptionsSmart) then
 				SetBodyTransform(storedhb[i],Transform(VecAdd(Vec(lookAt[1],StoredHeight,lookAt[3]), Vec(0,keyPos2/4,0)),QuatEuler(mousex/10,keyPos*15,mousey/10)))
+				targetpos = VecAdd(Vec(lookAt[1],StoredHeight,lookAt[3]), Vec(0,keyPos2/4,0))
 			else
-				SetBodyTransform(storedhb[i],Transform(VecAdd(lookAt, Vec(0,keyPos2/4,0)),QuatEuler(mousex/10,keyPos*15,mousey/10)))
+				if (firstplace) then
+					SetBodyTransform(storedhb[i],Transform(VecAdd(lookAt, Vec(0,keyPos2/4,0)),QuatEuler(mousex/10,keyPos*15,mousey/10)))
+					targetpos = VecAdd(lookAt, Vec(0,keyPos2/4,0))
+				else
+					SetBodyTransform(storedhb[i],Transform(VecAdd(correctedpos[1],targetpos),QuatEuler(mousex/10,keyPos*15,mousey/10)))
+					targetpos = VecAdd(lookAt, Vec(0,keyPos2/4,0))
+				end
 			end
 			SetBodyVelocity(storedhb[i], Vec(0,0,0))
 			SetBodyAngularVelocity(storedhb[i], Vec(0,0,0))
@@ -146,8 +157,28 @@ function tick(dt)
 				--reset mouse position variables
 				mousex = 0
 				mousey = 0
+				
+			end
+
+			if(firstplace) then
+				firstplacenum = firstplacenum + 1
+				if (firstplacenum > 5) then
+					firstplace = false
+					firstplacenum = 0
+				end
+				--fixing
+				min, max = GetBodyBounds(storedhb[i])
+				boundsSize = VecSub(max, min)
+				center = VecLerp(min, max, 0.5)
+				correctedpos[i] = VecSub(targetpos, center)
 			end
 		end
+	end
+
+	if(OptionsSmart) then
+		targetpos = VecAdd(Vec(lookAt[1],StoredHeight,lookAt[3]), Vec(0,keyPos2/4,0))
+	else
+		targetpos = VecAdd(lookAt, Vec(0,keyPos2/4,0))
 	end
 end
 
@@ -221,6 +252,16 @@ function draw()
 		mousex = mousex + InputValue("mousedx")
 		mousey = mousey + InputValue("mousedy")
 	end
+	DebugCross(min,1,0,0,1)
+	DebugCross(max,1,0,0,1)
+	DebugCross(center,0,1,0,1)
+	DebugCross(targetpos,0,0,1,1)
+	DebugCross(VecAdd(correctedpos[1],targetpos),1,1,0,1)
+	DebugBox(center,boundsSize[2],boundsSize[3],boundsSize[1])
+
+	DebugWatch("correctedpos",correctedpos[1])
+	DebugWatch("first",firstplace)
+
 end
 
 --used to reject bodies when placing them. Raycast can not see them. Like when placing a car so raycast goes through car to ground instead of hitting the car.
@@ -240,7 +281,8 @@ function StoreItem(StoredNum)
 	isstored[StoredNum] = false
 	readytoplace[StoredNum] = true
 	SetBodyTransform(storedhb[StoredNum],Transform(Vec(0,-100*StoredNum,0),storedhbt[StoredNum].rot))
-
+	firstplace = true
+	
 	StoredHeight = lookAt[2]
 end
 
