@@ -141,7 +141,7 @@ function tick(dt)
 					SetBodyTransform(storedhb[i],Transform(VecAdd(lookAt, Vec(0,keyPos2/4,0)),QuatEuler(mousex/10,keyPos*15,mousey/10)))
 					targetpos = VecAdd(lookAt, Vec(0,keyPos2/4,0))
 				else
-					SetBodyTransform(storedhb[i],Transform(VecAdd(correctedpos[1],targetpos),QuatEuler(mousex/10,keyPos*15,mousey/10)))
+					SetBodyTransform(storedhb[i],Transform(VecAdd(correctedpos[i],targetpos),QuatEuler(mousex/10,keyPos*15,mousey/10)))
 					targetpos = VecAdd(lookAt, Vec(0,keyPos2/4,0))
 				end
 			end
@@ -170,6 +170,7 @@ function tick(dt)
 				min, max = GetBodyBounds(storedhb[i])
 				boundsSize = VecSub(max, min)
 				center = VecLerp(min, max, 0.5)
+				center = VecSub(center,Vec(0,boundsSize[2]/2,0))
 				correctedpos[i] = VecSub(targetpos, center)
 			end
 		end
@@ -252,16 +253,6 @@ function draw()
 		mousex = mousex + InputValue("mousedx")
 		mousey = mousey + InputValue("mousedy")
 	end
-	DebugCross(min,1,0,0,1)
-	DebugCross(max,1,0,0,1)
-	DebugCross(center,0,1,0,1)
-	DebugCross(targetpos,0,0,1,1)
-	DebugCross(VecAdd(correctedpos[1],targetpos),1,1,0,1)
-	DebugBox(center,boundsSize[2],boundsSize[3],boundsSize[1])
-
-	DebugWatch("correctedpos",correctedpos[1])
-	DebugWatch("first",firstplace)
-
 end
 
 --used to reject bodies when placing them. Raycast can not see them. Like when placing a car so raycast goes through car to ground instead of hitting the car.
