@@ -1,4 +1,25 @@
 function init()
+	--controls
+
+	--controls
+
+	--key used for picking up a object
+	PickupKey = "q"
+
+	--key used for showing menu
+	ShowMenuKey = "r"
+
+	--key used for rotating object
+	TurnRightKey = "t"
+
+	--key used for rotating a object
+	TurnLeftKey = "y"
+
+	--key used for moving a object up
+	MoveUpKey = "u"
+
+	--key used for moving a object down
+	MoveDownKey = "j"
 	--creates arrays for object data
 	isstored = {}
 	storedhb = {}
@@ -55,7 +76,7 @@ function tick(dt)
 		if(OptionsOutline) then
 			DrawBodyOutline(hb,1,1,1,0.5)
 		end
-		if(InputPressed("q")) then
+		if(InputPressed(PickupKey)) then
 			--set storage
 			for i = 1,4,1 
 			do
@@ -85,7 +106,7 @@ function tick(dt)
 	end
 
 	--beginning of menu script
-	if (InputDown("r") and IsUsingSledge) then
+	if (InputDown(ShowMenuKey) and IsUsingSledge) then
 		show = true
 	else
 		show = false
@@ -96,22 +117,22 @@ function tick(dt)
 	do 
 		if(readytoplace[i]) then
 			--change amount of rotation.
-			if(InputDown("t")) then
+			if(InputDown(TurnRightKey)) then
 				keyPos = keyPos + 0.1
 			end
-			if(InputDown("y")) then
+			if(InputDown(TurnLeftKey)) then
 				keyPos = keyPos - 0.1
 			end
 
-			if(InputDown("u")) then
+			if(InputDown(MoveUpKey)) then
 				keyPos2 = keyPos2 + 0.1
 			end
 			--do this if smart mode
-			if(InputDown("j") and (((keyPos2/4)+StoredHeight) > lookAt[2]) and OptionsSmart) then
+			if(InputDown(MoveDownKey) and (((keyPos2/4)+StoredHeight) > lookAt[2]) and OptionsSmart) then
 				keyPos2 = keyPos2 - 0.1
 			end
 			--do this if not
-			if(InputDown("j") and (((keyPos2/4)+lookAt[2]) > lookAt[2]) and not (OptionsSmart)) then
+			if(InputDown(MoveDownKey) and (((keyPos2/4)+lookAt[2]) > lookAt[2]) and not (OptionsSmart)) then
 				keyPos2 = keyPos2 - 0.1
 			end
 
