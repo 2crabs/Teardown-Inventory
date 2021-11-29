@@ -38,6 +38,7 @@ function init()
 	OptionsSledge = not GetBool("savegame.mod.sledge")
 	OptionsOutline = not GetBool("savegame.mod.outline")
 	OptionsSmart = not GetBool("savegame.mod.smart")
+	MenuHold = GetBool("savegame.mod.menu_hold")
 
 	firstplace = true
 	firstplacenum = 0
@@ -106,10 +107,16 @@ function tick(dt)
 	end
 
 	--beginning of menu script
-	if (InputDown(ShowMenuKey) and IsUsingSledge) then
-		show = true
+	if (MenuHold) then
+		if (InputDown(ShowMenuKey) and IsUsingSledge) then
+			show = true
+		else
+			show = false
+		end
 	else
-		show = false
+		if (InputPressed(ShowMenuKey)) then
+			show = not show
+		end
 	end
 
 	--placement
@@ -293,6 +300,9 @@ function rejectBodies()
 end
 
 function StoreItem(StoredNum)
+	if (not MenuHold) then
+		show = false
+	end
 	SetBodyTransform(storedhb[StoredNum],Transform(VecAdd(lookAt, Vec(0,1,0)),storedhbt[StoredNum].rot))
 	SetBodyVelocity(storedhb[StoredNum], Vec(0,0,0))
 	isstored[StoredNum] = false

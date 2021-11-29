@@ -10,6 +10,10 @@ function init()
 	if (not HasKey("savegame.mod.smart")) then
 		SetBool("savegame.mod.smart", false)
 	end
+
+	if (not HasKey("savegame.mod.menu_hold")) then
+		SetBool("savegame.mod.smart", true)
+	end
 end
 
 function draw()
@@ -81,6 +85,21 @@ function draw()
 	else
 		if UiTextButton("smart") then
 			SetBool("savegame.mod.smart", true)
+		end
+	end
+	UiTranslate(-250, 50)
+	UiColor(1, 1, 1, 1)
+	UiFont("regular.ttf", 30)
+	UiText("Hold menu open")
+	UiTranslate(250,-2)
+	UiColor(1, 1, 0.4, 1)
+	if (GetBool("savegame.mod.menu_hold")) then
+		if UiTextButton("disabled") then
+			SetBool("savegame.mod.menu_hold", false)
+		end
+	else
+		if UiTextButton("enabled") then
+			SetBool("savegame.mod.menu_hold", true)
 		end
 	end
 end
